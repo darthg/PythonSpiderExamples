@@ -13,3 +13,7 @@ proxy_ip="111.155.116.216:8123"
 url="http://www.baidu.com"
 data=use_proxy(url,proxy_ip)
 print(len(data))
+
+
+
+
