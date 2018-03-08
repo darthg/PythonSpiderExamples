@@ -1,0 +1,107 @@
+import xlrd
+import xlsxwriter
+
+#设置合并的所有文件给一个列表allxls
+allxls=[r"E:\Python教程\源码\源码\第1周\Excel合并作业-呆鸟\1.xlsx",r"E:\Python教程\源码\源码\第1周\Excel合并作业-呆鸟\2.xlsx"]
+
+#设置目的文件变量
+endxls=r"E:\Python教程\源码\源码\第1周\Excel合并作业-呆鸟\3.xlsx"
+
+#定义打开表格函数
+def open_xls(file):
+    try:
+        fh=xlrd.open_workbook(file)
+        return fh
+    except Exception as e:
+        print("打开目标源文件出错："+str(e))
+
+
+#定义读取某个sheet的行数
+def getnrows(fh,sheet):
+    table=fh.sheets()[sheet]#sheet参数的意思是一个表格中的哪个子表标记
+    content=table.nrows#nrows是table.sheets()获取行数的内置方法
+    return content
+
+
+def getsheet(fh):
+     return fh.sheets()
+
+#读取某个文件的内容并返回所有行的值
+def getfilect(fh,fl,shnum):
+    fh=open_xls(fl)
+    table=fh.sheet_by_name(shname[shnum])#shname[shnum]调用子表列表中索引为shnum号的某个子表名
+    num=getnrows(fh,shnum)#调用上面定义的getnrows函数获得行数
+    lenrvalue=len(rvalue)
+    for row in range(0,num):#遍历表格每一行
+        rdata=table.row_values(row)
+        rvalue.append(rdata)
+    #print(rvalue[lenvalue:])
+    filevalue.append(rvalue[lenrvalue:])
+    return filevalue
+
+
+
+
+
+#定义需要的参数
+filevalue=[]
+#存储一个标签的结果
+svalue=[]
+#存储一行结果
+rvalue=[]
+#存储sheet名字
+shname=[]
+
+
+#读取第一个文件，获得sheet数
+fh=open_xls(allxls[0])#读取allxls中的第一个表格，初始化
+sh=getsheet(fh)#调用getsheet函数，返回
+x=0
+for sheet in sh:
+    shname.append(sheet.name)
+    svalue.append([])#只要有一个子表，就初始化一个空列表到母表中
+    print(sheet.name)
+    print(svalue)
+    x+=1
+#依次读取sheet内容
+#依次读取各文件当前sheet
+for shnum in range(0,x):
+    for fl in allxls:
+        print("正在读取："+str(fl)+"的第"+str(shnum)+"个标签...")
+        filevalue=getfilect(fh,fl,shnum)
+    svalue[shnum].append(filevalue)
+sn=x
+fn=len(allxls)
+endvalue=[]
+
+
+
+def getsvalue(k):
+    for z in range(k,k+fn):
+        endvalue.append(svalue[0][0][z])
+    return endvalue
+
+
+wb1=xlsxwriter.Workbook(endxls)
+ws=wb1.add_worksheet()
+polit=0
+linenum=0
+#依次遍历每个sheet中的数据
+for s in range(0,sn*fn,fn):
+    thisvalue=getsvalue(s)
+    tvalue=thisvalue[polit:]
+    #将一个标签内容写入新文件中
+    for a in range(0,len(tvalue)):
+        for b in range(0,len(tvalue[a])):
+             for c in range(0,len(tvalue[a][b])):
+                 data=tvalue[a][b][c]
+                 ws.write(linenum,c,data)
+             linenum+=1
+    #叠加关系，需要设置分割点
+    polit=len(thisvalue)
+wb1.close()
+
+
+
+
+
